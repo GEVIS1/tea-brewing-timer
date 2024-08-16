@@ -1,10 +1,11 @@
 import './style.css'
 import typescriptLogo from './typescript.svg'
 import viteLogo from '/vite.svg'
-import { setupCounter } from './counter.ts'
+import brewData from './timer/TeaBrewdata.ts'
+import Timer from './timer/Timer.ts'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
+  <div id="background">
     <a href="https://vitejs.dev" target="_blank">
       <img src="${viteLogo}" class="logo" alt="Vite logo" />
     </a>
@@ -12,8 +13,10 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
       <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
     </a>
     <h1>Vite + TypeScript</h1>
+    <div id="stats"></div>
     <div class="card">
-      <button id="counter" type="button"></button>
+      <input id="textbox" type="text"></input>
+      <button id="start" type="button">Start</button>
     </div>
     <p class="read-the-docs">
       Click on the Vite and TypeScript logos to learn more
@@ -21,4 +24,11 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   </div>
 `
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+const startButton = document.querySelector<HTMLButtonElement>("#start");
+const textBox = document.querySelector<HTMLInputElement>("#textbox");
+const background = document.querySelector<HTMLBodyElement>("body");
+const stats = document.querySelector<HTMLDivElement>("#stats");
+if (!startButton || !textBox || !background || !stats) {
+  throw Error("Could not grab required elements.")
+}
+const timer = new Timer(brewData[0], "gongFu", startButton, textBox, background, stats);

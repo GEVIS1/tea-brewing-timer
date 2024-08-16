@@ -13,6 +13,7 @@ class Timer {
     private currentBrews: number;
     private startTime: Date;
     private stopTime: Date;
+    private isRunning: boolean;
     private shouldStop: boolean;
     private stopReason: StopReason;
     private startButton: HTMLButtonElement;
@@ -39,12 +40,13 @@ class Timer {
         this.stats.innerText = this.currentStats;
 
         this.tick = () => {
-            if (this.shouldStop) {
+            if (this.isRunning && this.shouldStop) {
                 switch (this.stopReason) {
                     case "annul":
-                        this.startButton.removeEventListener("click", () => this.annul());
-                        this.startButton.addEventListener("click", () => this.start());
+                        this.isRunning = false;
+                        this.shouldStop = false;
                         this.startButton.innerText = this.currentBrews == 0 ? "Start" : "Next";
+                        this.startTime = new Date();
                         this.stopTime = this.nextStopTime;
                         this.textBox.value = this.currentTime;
                         break;
@@ -57,21 +59,21 @@ class Timer {
             }
             // This value is what to draw on the timer
             this.textBox.value = this.currentTime;
-            console.log(this.currentTime)
     
-
-            // TODO: This runs twice some times..
             if (new Date().getTime() > this.stopTime.getTime()) {
+                this.isRunning = false;
+                this.shouldStop = false;
                 this.pulse();
                 this.textBox.value = "0";
-                console.log("Incrementing brews.")
-                console.log("Before", this.currentBrews)
                 this.currentBrews += 1;
-                console.log("After", this.currentBrews)
-                this.startButton.removeEventListener("click", () => this.annul());
-                this.startButton.addEventListener("click", () => this.start());
                 this.startButton.innerText = "Next";
                 this.stats.innerText = this.currentStats;
+
+                setTimeout(()=>{
+                    this.startTime = new Date()
+                    this.stopTime = this.nextStopTime
+                    this.textBox.value = this.currentTime;
+                }, 1000);
                 return;
             }
             setTimeout(this.tick, this.TICK_TIME);
@@ -79,13 +81,17 @@ class Timer {
     }
 
     public start(): void {
+        if (this.isRunning) {
+            this.shouldStop = true;
+            this.stopReason = "annul";
+            return;
+        }
         this.shouldStop = false;
+        this.isRunning = true;
         this.stopReason = undefined;
         this.startTime = new Date();
         this.stopTime = this.nextStopTime;
         this.startButton.innerText = "Annul";
-        this.startButton.removeEventListener("click", () => this.start());
-        this.startButton.addEventListener("click", () => this.annul());
         setTimeout(this.tick, this.TICK_TIME);
     };
 

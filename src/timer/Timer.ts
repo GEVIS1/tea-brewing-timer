@@ -114,6 +114,28 @@ class Timer {
         throw Error("Unimplemented function reset()")
     };
 
+    // Updating the tea type here
+    public updateTeaType(teaData: TeaBrewData): void {
+        this.currentBrewData = teaData;
+        this.currentBrewType = teaData.teaType;
+        this.currentBrewTemp = teaData.tempCels;
+        this.background.style.background = this.currentBrewType;
+        this.currentBrews = 0;
+        this.stats.innerText = this.currentStats;
+    }
+
+    // Updating the brew method here
+    public updateBrewMethod(method: TeaBrewMethodName): void {
+        this.currentBrewMethod = method;
+        this.currentBrews = 0;
+        this.stats.innerText = this.currentStats;
+    }
+    // Initializing the timer here and this is being called from the main.ts
+    public initializeTimer(selectedTea: TeaBrewData, selectedMethod: TeaBrewMethodName): void {
+        this.updateTeaType(selectedTea);
+        this.updateBrewMethod(selectedMethod);
+    }
+
     get currentStats(): string {
         return `Tea type: ${this.currentBrewType}, Brews: ${this.currentBrews}, Temp: ${this.currentBrewTemp}, Method: ${this.currentBrewMethod}`;
     }
